@@ -1,0 +1,46 @@
+version: '2'
+services:
+  demo-service-1:
+    image: demo/microservice1:v2.0.0
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    network_mode: host
+    restart: always
+    ports:
+      - "8080:8080"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ./serv.env
+    entrypoint:
+      - /bin/sh
+      - -c
+      - 'npm run serveOne'
+  demo-service-2:
+    image: demo/microservice2:v2.0.0
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    network_mode: host
+    restart: always
+    ports:
+      - "8081:8081"
+    depends_on:
+      - rabbitmq
+    env_file:
+      - ./serv.env
+    entrypoint:
+      - /bin/sh
+      - -c
+      - 'npm run serveTwo'
+  rabbitmq:
+    image: smebberson/alpine-rabbitmq
+    network_mode: host
+    restart: always
+    volumes:
+      - /Users/:/data/db
+    expose:
+      - 5672
+    ports:
+      - "5672:5672"
